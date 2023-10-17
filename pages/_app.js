@@ -1,6 +1,7 @@
 import NProgress from 'nprogress';
 import Router from 'next/router';
 import { ApolloProvider } from '@apollo/client';
+import { SessionProvider } from 'next-auth/react';
 import Page from '../components/Page';
 import '../components/styles/nprogress.css';
 import withData from '../lib/withData';
@@ -15,25 +16,28 @@ Router.events.on('routeChangeStart', () => NProgress.start());
 Router.events.on('routeChangeComplete', () => NProgress.done());
 Router.events.on('routeChangeError', () => NProgress.done());
 
-function MyApp({ Component, pageProps, apollo }) {
+// eslint-disable-next-line react/prop-types
+function MyApp({ Component, pageProps: { session, ...pageProps }, apollo }) {
   return (
-    <ApolloProvider client={apollo}>
-      <AddIngredientStateProvider>
-        <EditShoppingItemStateProvider>
-          <AddShoppingListItemStateProvider>
-            <AddRecipeItemStateProvider>
-              <EditRecipeItemStateProvider>
-                <MobileNavStateProvider>
-                  <Page>
-                    <Component {...pageProps} />
-                  </Page>
-                </MobileNavStateProvider>
-              </EditRecipeItemStateProvider>
-            </AddRecipeItemStateProvider>
-          </AddShoppingListItemStateProvider>
-        </EditShoppingItemStateProvider>
-      </AddIngredientStateProvider>
-    </ApolloProvider>
+    <SessionProvider session={session}>
+      <ApolloProvider client={apollo}>
+        <AddIngredientStateProvider>
+          <EditShoppingItemStateProvider>
+            <AddShoppingListItemStateProvider>
+              <AddRecipeItemStateProvider>
+                <EditRecipeItemStateProvider>
+                  <MobileNavStateProvider>
+                    <Page>
+                      <Component {...pageProps} />
+                    </Page>
+                  </MobileNavStateProvider>
+                </EditRecipeItemStateProvider>
+              </AddRecipeItemStateProvider>
+            </AddShoppingListItemStateProvider>
+          </EditShoppingItemStateProvider>
+        </AddIngredientStateProvider>
+      </ApolloProvider>
+    </SessionProvider>
   );
 }
 
